@@ -61,7 +61,6 @@
     </Compile>
     <Compile Include="Pdf2Comic_ImageCompress.cs" />
     <Compile Include="Pdf2Comic_PdfExtract.cs" />
-    <Compile Include="Pdf2Comic_Program.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="fmPdf2Comic.resx">

@@ -16,12 +16,10 @@ namespace Pdf2Comic
     {
         #region PROPIEDADES PUBLICAS
 
-        public Pdf2Comic_Program datosPrograma;
         public Pdf2Comic_PdfExtract objetoPDF;
+        string pathArchivo;
         public List<Image> ListaImagenes;
         public string nombreArchivoPDF;
-
-        public List<string> listaPathImagenes = new List<string>();
 
         #endregion
 
@@ -38,7 +36,6 @@ namespace Pdf2Comic
 
         private void fmPdf2Comic_Load_1(object sender, EventArgs e)
         {
-            datosPrograma = new Pdf2Comic_Program();
             ListaImagenes = new List<Image>();
 
             lvImageList.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.HeaderSize);
@@ -51,12 +48,11 @@ namespace Pdf2Comic
             ofdAbrirPDF.Filter = "PDF Files|*.pdf";
             ofdAbrirPDF.Title = "Select a PDF File";
             ofdAbrirPDF.FileName = "";
-            ofdAbrirPDF.InitialDirectory = datosPrograma.UltimoPath;
 
             if (ofdAbrirPDF.ShowDialog() == DialogResult.OK)
             {
                 lbFile.Text = ofdAbrirPDF.FileName;
-                datosPrograma.UltimoPath = Path.GetDirectoryName(ofdAbrirPDF.FileName);
+                pathArchivo = Path.GetDirectoryName(ofdAbrirPDF.FileName);
                 nombreArchivoPDF = Path.GetFileName(ofdAbrirPDF.FileName);
 
                 Lanzar_Carga(ofdAbrirPDF.FileName);
@@ -66,6 +62,34 @@ namespace Pdf2Comic
         private void lvImageList_ItemActivate(object sender, EventArgs e)
         {
             pbLoadImage.Image = (Image)lvImageList.SelectedItems[0].Tag;
+        }
+
+        private void btConvert_Click(object sender, EventArgs e)
+        {
+            if(rbToImage.Checked)
+            {
+                ConvertToImage();
+                return;
+            }
+
+            if(rbToComic.Checked)
+            {
+                ConvertToComic();
+                return;
+            }
+        }
+
+        private void lvImageList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (lvImageList.SelectedItems.Count > 0)
+                if (e.KeyCode == Keys.Delete)
+                    Borrar_Items(lvImageList.SelectedItems);
+        }
+
+        private void borrarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvImageList.SelectedItems.Count > 0)
+                Borrar_Items(lvImageList.SelectedItems);
         }
         
         #endregion
@@ -81,7 +105,6 @@ namespace Pdf2Comic
             ListaImagenes = objetoPDF.miPDF.Devolver_Imagenes();
 
             for (int cont = 0; cont < ListaImagenes.Count - 1; cont++ )
-                //foreach (var imagen in ListaImagenes)
             {
                 ListViewItem item = new ListViewItem();
                 item.Text = Path.GetFileNameWithoutExtension(nombreArchivoPDF) + "_" + cont;
@@ -91,48 +114,71 @@ namespace Pdf2Comic
 
             lvImageList.Refresh();
 
+            ListaImagenes.Clear();
+
         }
 
         private void Guardar_Imagenes()
         {
-            int i = 1;
-            foreach (var imagen in objetoPDF.miPDF.Devolver_Diccionario_Imagenes())
+            foreach(ListViewItem item in lvImageList.Items)
             {
-                string nombreImagen = Path.GetFileNameWithoutExtension(nombreArchivoPDF) + i + imagen.Value;
-                string rutaImagen = Path.Combine(new string[] { datosPrograma.UltimoPath, nombreImagen });
+                Image imagen = (Image)item.Tag;
+                ImageFormat formatoImagen = imagen.RawFormat;
+                string nombreImagen = item.Text + Devolver_Extension(formatoImagen);
+                string rutaImagen = Path.Combine(new string[] { pathArchivo, nombreImagen });
 
-                System.Drawing.Imaging.ImageFormat formatoImagen = null;
-                if (imagen.Value.Contains("jpg"))
-                    formatoImagen = System.Drawing.Imaging.ImageFormat.Jpeg;
-
-                imagen.Key.Save(rutaImagen, formatoImagen);
-                i++;
-
-                listaPathImagenes.Add(rutaImagen);
+                imagen.Save(rutaImagen, formatoImagen);
+                imagen.Dispose();
             }
         }
 
         private void Comprimir_Imagenes()
         {
-            Pdf2Comic_ImageCompress compresion = new Pdf2Comic_ImageCompress(listaPathImagenes, Path.GetFileNameWithoutExtension(nombreArchivoPDF));
-            compresion.Comprimir(Path.Combine(new string[] { datosPrograma.UltimoPath, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".zip" }));
+            //Pdf2Comic_ImageCompress compresion = new Pdf2Comic_ImageCompress(listaPathImagenes, Path.GetFileNameWithoutExtension(nombreArchivoPDF));
+            //compresion.Comprimir(Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".zip" }));
         }
 
-        #endregion
-        
+        private string Devolver_Extension(ImageFormat formato)
+        {
+            if (formato.Equals(ImageFormat.Jpeg))
+                return ".jpg";
 
-        private void btImagen_Click(object sender, EventArgs e)
+            if (formato.Equals(ImageFormat.Bmp))
+                return ".bmp";
+
+            if (formato.Equals(ImageFormat.Gif))
+                return ".gif";
+
+            if (formato.Equals(ImageFormat.Png))
+                return ".png";
+
+            return null;
+        }
+
+        private void ConvertToImage()
         {
             Guardar_Imagenes();
         }
 
-        private void btCBZ_Click(object sender, EventArgs e)
+        private void ConvertToComic()
         {
             Guardar_Imagenes();
             Comprimir_Imagenes();
             //Borrar_Imagenes();
         }
 
+        private void Borrar_Items(ListView.SelectedListViewItemCollection itemsBorrar)
+        {
+            foreach (ListViewItem item in itemsBorrar)
+            {
+                lvImageList.Items.Remove(item);
+            }
+        }
+
+        #endregion
+
+ 
+        
 
     }
 }
