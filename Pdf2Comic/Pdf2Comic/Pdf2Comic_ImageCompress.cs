@@ -48,6 +48,7 @@ namespace Pdf2Comic
                 zipWriter.Write(Path.GetFileName(ruta), ruta);
             }
 
+            zipWriter.Dispose();
             stream.Close();
         }
     }

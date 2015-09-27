@@ -17,7 +17,7 @@ namespace Pdf2Comic
         #region PROPIEDADES PUBLICAS
 
         public Pdf2Comic_PdfExtract objetoPDF;
-        string pathArchivo;
+        public string pathArchivo;
         public List<Image> ListaImagenes;
         public string nombreArchivoPDF;
 
@@ -100,6 +100,8 @@ namespace Pdf2Comic
         {
             objetoPDF = new Pdf2Comic_PdfExtract(rutaArchivo);
             lbNumberPages.Text = objetoPDF.miPDF.PdfLeido.NumberOfPages.ToString();
+            fmInformativo fmInfo = new fmInformativo("Leyendo PDF", "Cargando las Imagenes del PDF");
+            fmInfo.Show();
 
             //Llenamos el ListView
             ListaImagenes = objetoPDF.miPDF.Devolver_Imagenes();
@@ -116,26 +118,56 @@ namespace Pdf2Comic
 
             ListaImagenes.Clear();
 
+            fmInfo.Close();
         }
 
         private void Guardar_Imagenes()
         {
+            fmInformativo fmInfo = new fmInformativo("Extranyendo Imagenes", "Extrayendo las Imagenes del PDF");
+            fmInfo.Show();
+
             foreach(ListViewItem item in lvImageList.Items)
             {
                 Image imagen = (Image)item.Tag;
                 ImageFormat formatoImagen = imagen.RawFormat;
                 string nombreImagen = item.Text + Devolver_Extension(formatoImagen);
                 string rutaImagen = Path.Combine(new string[] { pathArchivo, nombreImagen });
+                item.Tag = rutaImagen;
 
                 imagen.Save(rutaImagen, formatoImagen);
                 imagen.Dispose();
             }
+
+            fmInfo.Close();
         }
 
         private void Comprimir_Imagenes()
         {
-            //Pdf2Comic_ImageCompress compresion = new Pdf2Comic_ImageCompress(listaPathImagenes, Path.GetFileNameWithoutExtension(nombreArchivoPDF));
-            //compresion.Comprimir(Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".zip" }));
+            fmInformativo fmInfo = new fmInformativo("Construyendo Comic", "Comprimiendo las Imagenes y Construyendo el Comic");
+            fmInfo.Show();
+
+            List<string> paths = new List<string>();
+            foreach(ListViewItem item in lvImageList.Items)
+            {
+                paths.Add(item.Tag.ToString());
+            }
+            
+            //Comprimimos las imagenes
+            Pdf2Comic_ImageCompress compresion = new Pdf2Comic_ImageCompress(paths, Path.GetFileNameWithoutExtension(nombreArchivoPDF));
+            compresion.Comprimir(Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".zip" }));
+            
+            //Renombramos el archivo zip
+            string antiguoPath = Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".zip" });
+            string nuevoPath = Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".cbz" });
+            File.Move(antiguoPath, nuevoPath);
+
+            //Borramos las images del disco duro
+            foreach(string path in paths)
+            {
+                File.Delete(path);
+            }
+
+            fmInfo.Close();
         }
 
         private string Devolver_Extension(ImageFormat formato)
@@ -176,9 +208,5 @@ namespace Pdf2Comic
         }
 
         #endregion
-
- 
-        
-
     }
 }

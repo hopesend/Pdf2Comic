@@ -10,3 +10,4 @@ c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\bin\Debug\itextsharp.xml
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.exe
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.pdb
+C:\Users\Hopesend\Documents\Visual Studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.fmInformativo.resources
