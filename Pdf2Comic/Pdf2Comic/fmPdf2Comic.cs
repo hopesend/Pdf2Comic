@@ -20,7 +20,7 @@ namespace Pdf2Comic
         public string pathArchivo;
         public List<Image> ListaImagenes;
         public string nombreArchivoPDF;
-
+       
         #endregion
 
         #region CONSTRUCTORES
@@ -42,6 +42,45 @@ namespace Pdf2Comic
             rbToComic.Checked = true;
         }
 
+        void objetoPDF_StopReadPdf(object sender, Pdf2Comic_PdfExtract.StopReadEventArgs e)
+        {
+            pbBarraProgreso.Visible = false;
+        }
+
+        void objetoPDF_StartReadPdf(object sender, Pdf2Comic_PdfExtract.StartReadEventArgs e)
+        {
+            pbBarraProgreso.Visible = true;
+            pbBarraProgreso.Maximum = e.totalImages;
+            pbBarraProgreso.Step = 1;
+            pbBarraProgreso.Minimum = 1;
+        }
+
+        void objetoPDF_NewImageRead(object sender, Pdf2Comic_PdfExtract.GetImagesPdfEventArgs e)
+        {
+            pbBarraProgreso.PerformStep();
+        }
+
+        void compresion_NewElementCompress(object sender, Pdf2Comic_ImageCompress.CompressElementEventArgs e)
+        {
+            pbBarraProgreso.PerformStep();
+        }
+
+        void compresion_StopCompressElements(object sender, Pdf2Comic_ImageCompress.StopCompressEventArgs e)
+        {
+            pbBarraProgreso.Visible = false;
+            lbStep.Visible = false;
+        }
+
+        void compresion_StartCompressElements(object sender, Pdf2Comic_ImageCompress.StartCompressEventArgs e)
+        {
+            pbBarraProgreso.Visible = true;
+            pbBarraProgreso.Maximum = e.totalElements;
+            pbBarraProgreso.Step = 1;
+            pbBarraProgreso.Minimum = 1;
+
+            lbStep.Text = "Compress Images...";
+            lbStep.Visible = true;
+        }
 
         private void btAbrirPDF_Click(object sender, EventArgs e)
         {
@@ -51,6 +90,12 @@ namespace Pdf2Comic
 
             if (ofdAbrirPDF.ShowDialog() == DialogResult.OK)
             {
+                if (pbLoadImage.Image != null)
+                    pbLoadImage.Image = pbLoadImage.InitialImage;
+
+                lvImageList.Items.Clear();
+                lvImageList.Refresh();
+
                 lbFile.Text = ofdAbrirPDF.FileName;
                 pathArchivo = Path.GetDirectoryName(ofdAbrirPDF.FileName);
                 nombreArchivoPDF = Path.GetFileName(ofdAbrirPDF.FileName);
@@ -98,18 +143,22 @@ namespace Pdf2Comic
 
         private void Lanzar_Carga(string rutaArchivo)
         {
-            objetoPDF = new Pdf2Comic_PdfExtract(rutaArchivo);
+            objetoPDF = new Pdf2Comic_PdfExtract();
+            
+            objetoPDF.StartReadPdf += objetoPDF_StartReadPdf;
+            objetoPDF.StopReadPdf += objetoPDF_StopReadPdf;
+            objetoPDF.NewImageRead += objetoPDF_NewImageRead;
+
+            objetoPDF.LanzarExtraccion(rutaArchivo);
             lbNumberPages.Text = objetoPDF.miPDF.PdfLeido.NumberOfPages.ToString();
-            fmInformativo fmInfo = new fmInformativo("Leyendo PDF", "Cargando las Imagenes del PDF");
-            fmInfo.Show();
 
             //Llenamos el ListView
             ListaImagenes = objetoPDF.miPDF.Devolver_Imagenes();
 
-            for (int cont = 0; cont < ListaImagenes.Count - 1; cont++ )
+            for (int cont = 0; cont < ListaImagenes.Count; cont++ )
             {
                 ListViewItem item = new ListViewItem();
-                item.Text = Path.GetFileNameWithoutExtension(nombreArchivoPDF) + "_" + cont;
+                item.Text = Path.GetFileNameWithoutExtension(nombreArchivoPDF) + "_" + (cont+1).ToString("0#");
                 item.Tag = ListaImagenes[cont];
                 lvImageList.Items.Add(item);
             }
@@ -117,14 +166,17 @@ namespace Pdf2Comic
             lvImageList.Refresh();
 
             ListaImagenes.Clear();
-
-            fmInfo.Close();
         }
 
         private void Guardar_Imagenes()
         {
-            fmInformativo fmInfo = new fmInformativo("Extranyendo Imagenes", "Extrayendo las Imagenes del PDF");
-            fmInfo.Show();
+            pbBarraProgreso.Visible = true;
+            pbBarraProgreso.Minimum = 1;
+            pbBarraProgreso.Step = 1;
+            pbBarraProgreso.Maximum = lvImageList.Items.Count;
+
+            lbStep.Text = "Saving Images...";
+            lbStep.Visible = true;
 
             foreach(ListViewItem item in lvImageList.Items)
             {
@@ -136,16 +188,16 @@ namespace Pdf2Comic
 
                 imagen.Save(rutaImagen, formatoImagen);
                 imagen.Dispose();
+
+                pbBarraProgreso.PerformStep();
             }
 
-            fmInfo.Close();
+            lbStep.Visible = false;
+            pbBarraProgreso.Visible = false;
         }
 
         private void Comprimir_Imagenes()
         {
-            fmInformativo fmInfo = new fmInformativo("Construyendo Comic", "Comprimiendo las Imagenes y Construyendo el Comic");
-            fmInfo.Show();
-
             List<string> paths = new List<string>();
             foreach(ListViewItem item in lvImageList.Items)
             {
@@ -154,20 +206,32 @@ namespace Pdf2Comic
             
             //Comprimimos las imagenes
             Pdf2Comic_ImageCompress compresion = new Pdf2Comic_ImageCompress(paths, Path.GetFileNameWithoutExtension(nombreArchivoPDF));
+            compresion.StartCompressElements += compresion_StartCompressElements;
+            compresion.StopCompressElements += compresion_StopCompressElements;
+            compresion.NewElementCompress += compresion_NewElementCompress;
+
             compresion.Comprimir(Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".zip" }));
             
             //Renombramos el archivo zip
             string antiguoPath = Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".zip" });
             string nuevoPath = Path.Combine(new string[] { pathArchivo, Path.GetFileNameWithoutExtension(nombreArchivoPDF) + ".cbz" });
-            File.Move(antiguoPath, nuevoPath);
+            
+            if(File.Exists(nuevoPath))
+            {
+                if(MessageBox.Show("The File Exist, ¿Overwrite?", "Attention!!!",  MessageBoxButtons.YesNo) == DialogResult.OK)
+                {
+                    File.Delete(nuevoPath);
+                    File.Move(antiguoPath, nuevoPath);
+                }
+            }
+            else
+                File.Move(antiguoPath, nuevoPath);
 
             //Borramos las images del disco duro
             foreach(string path in paths)
             {
                 File.Delete(path);
             }
-
-            fmInfo.Close();
         }
 
         private string Devolver_Extension(ImageFormat formato)
@@ -196,7 +260,6 @@ namespace Pdf2Comic
         {
             Guardar_Imagenes();
             Comprimir_Imagenes();
-            //Borrar_Imagenes();
         }
 
         private void Borrar_Items(ListView.SelectedListViewItemCollection itemsBorrar)

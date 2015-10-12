@@ -1,6 +1,6 @@
 ﻿namespace Pdf2Comic
 {
-    partial class fmPdf2Comic
+    public partial class fmPdf2Comic
     {
         /// <summary>
         /// Variable del diseñador requerida.
@@ -53,6 +53,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.pbBarraProgreso = new System.Windows.Forms.ProgressBar();
+            this.lbStep = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbLoadImage)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
@@ -208,19 +210,19 @@
             // abrirToolStripMenuItem
             // 
             this.abrirToolStripMenuItem.Name = "abrirToolStripMenuItem";
-            this.abrirToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.abrirToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.abrirToolStripMenuItem.Text = "Open";
             this.abrirToolStripMenuItem.Click += new System.EventHandler(this.btAbrirPDF_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(100, 6);
             // 
             // salirToolStripMenuItem
             // 
             this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
-            this.salirToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.salirToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.salirToolStripMenuItem.Text = "Exit";
             // 
             // helpToolStripMenuItem
@@ -248,11 +250,32 @@
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
+            // pbBarraProgreso
+            // 
+            this.pbBarraProgreso.Location = new System.Drawing.Point(200, 387);
+            this.pbBarraProgreso.Name = "pbBarraProgreso";
+            this.pbBarraProgreso.Size = new System.Drawing.Size(367, 23);
+            this.pbBarraProgreso.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbBarraProgreso.TabIndex = 21;
+            this.pbBarraProgreso.Visible = false;
+            // 
+            // lbStep
+            // 
+            this.lbStep.AutoSize = true;
+            this.lbStep.Location = new System.Drawing.Point(108, 393);
+            this.lbStep.Name = "lbStep";
+            this.lbStep.Size = new System.Drawing.Size(86, 13);
+            this.lbStep.TabIndex = 22;
+            this.lbStep.Text = "Saving Images...";
+            this.lbStep.Visible = false;
+            // 
             // fmPdf2Comic
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(573, 409);
+            this.ClientSize = new System.Drawing.Size(573, 415);
+            this.Controls.Add(this.lbStep);
+            this.Controls.Add(this.pbBarraProgreso);
             this.Controls.Add(this.lvImageList);
             this.Controls.Add(this.lbNumberPages);
             this.Controls.Add(this.lbPages);
@@ -305,6 +328,8 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.MenuStrip menuStrip1;
+        public System.Windows.Forms.ProgressBar pbBarraProgreso;
+        private System.Windows.Forms.Label lbStep;
     }
 }
 

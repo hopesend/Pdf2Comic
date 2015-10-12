@@ -1,5 +1,4 @@
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\bin\Debug\Pdf2Comic.exe.config
-c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.csprojResolveAssemblyReference.cache
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.fmPdf2Comic.resources
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.Properties.Resources.resources
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.csproj.GenerateResource.Cache
@@ -10,4 +9,3 @@ c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\bin\Debug\itextsharp.xml
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.exe
 c:\users\hopesend\documents\visual studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.pdb
-C:\Users\Hopesend\Documents\Visual Studio 2013\Projects\Pdf2Comic\Pdf2Comic\Pdf2Comic\obj\Debug\Pdf2Comic.fmInformativo.resources

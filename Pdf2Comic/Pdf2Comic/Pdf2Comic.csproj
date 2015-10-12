@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>pdf2Comic.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp, Version=5.5.7.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.7\lib\itextsharp.dll</HintPath>
@@ -53,12 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cXML.cs" />
-    <Compile Include="fmInformativo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="fmInformativo.Designer.cs">
-      <DependentUpon>fmInformativo.cs</DependentUpon>
-    </Compile>
     <Compile Include="fmPdf2Comic.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,9 +66,6 @@
     <Compile Include="Pdf2Comic_PdfExtract.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="fmInformativo.resx">
-      <DependentUpon>fmInformativo.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="fmPdf2Comic.resx">
       <DependentUpon>fmPdf2Comic.cs</DependentUpon>
     </EmbeddedResource>
@@ -97,6 +91,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="pdf2Comic.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
